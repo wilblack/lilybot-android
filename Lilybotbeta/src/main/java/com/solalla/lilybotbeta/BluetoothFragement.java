@@ -13,10 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 
 import java.util.ArrayList;
 
@@ -31,11 +28,13 @@ class BluetoothFragment extends Fragment implements View.OnClickListener {
     View rootView;
 
     public ArrayList<String> devices;
+    public ArrayList<BluetoothDevice> btDevices;
     public IntentFilter filter;
 
     public void PlaceholderFragment() {
 
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,6 +44,7 @@ class BluetoothFragment extends Fragment implements View.OnClickListener {
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         devices = new ArrayList<String>();
+        btDevices = new ArrayList<BluetoothDevice>();
 
 
         // Register filters
@@ -94,6 +94,12 @@ class BluetoothFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    public void btConnect(BluetoothDevice device){
+        tvStatus.setText("Attempting to connect to "+ device.toString() );
+
+    }
+
+
     // Create a BroadcastReceiver for ACTION_FOUND for Bluetooth
     public final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -116,12 +122,24 @@ class BluetoothFragment extends Fragment implements View.OnClickListener {
                 text = device.getName() + "\n" + device.getAddress();
                 Log.d(TAG,text );
                 devices.add(device.getName() + "\n" + device.getAddress());
+                btDevices.add(device);
+
+
                 if (devicesAdapter == null){
                     // Render the results in List
                     listView = (ListView) rootView.findViewById(R.id.devicesListView);
                     // Update adaptor with new results
                     devicesAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, devices);
                     listView.setAdapter(devicesAdapter);
+
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+                            btConnect(btDevices.get(position));
+                        }
+                    });
+
                 } else {
                     devicesAdapter.notifyDataSetChanged();
                 }
@@ -134,6 +152,7 @@ class BluetoothFragment extends Fragment implements View.OnClickListener {
                 // Clear previous list
                 if (devicesAdapter != null) {
                     devices.clear();
+                    btDevices.clear();
                     devicesAdapter.notifyDataSetChanged();
                 }
 

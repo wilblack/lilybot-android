@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/devicesListView"
             android:layout_below="@+id/status"
-            android:choiceMode="singleChoice"/>
+            android:choiceMode="singleChoice"
+            android:background="#000000"/>
 
 </RelativeLayout>
